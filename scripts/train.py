@@ -6,7 +6,7 @@ import wandb
 import os
 
 import sys
-sys.path.append("/home/compu/samplecode_simswap")
+sys.path.append("/home/compu/cleancode/simswap")
 from utils import utils
 from core.checkpoint import ckptIO
 from core.loss import lossCollector
