@@ -2,9 +2,9 @@ import torch
 import time
 
 
-class lossCollector():
+class LossCollector():
     def __init__(self, args):
-        super(lossCollector, self).__init__()
+        super(LossCollector, self).__init__()
         self.args = args
         self.start_time = time.time()
         self.loss_dict = {}
