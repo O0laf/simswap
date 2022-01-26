@@ -77,9 +77,9 @@ def train(gpu, args):
         # train G #
         ###########
 
-        # Run G
         G_list = [I_source, I_target, same_person]
 
+        # Run G to swap identity from source to target image
         I_swapped = G(I_source, I_target)
         G_list += [I_swapped]
 
@@ -94,7 +94,7 @@ def train(gpu, args):
         g_real2 = D2.forward(I_target_downsampled)
         G_list += [g_fake1, g_fake2, g_real1, g_real2]
         
-        # Run arc face
+        # Run ArcFace to extract identity vectors from swapped and source image
         id_swapped = G.get_id(I_swapped)
         id_source = G.get_id(I_source)
         G_list += [id_swapped, id_source]
@@ -109,7 +109,6 @@ def train(gpu, args):
         # train D #
         ###########
 
-        # run D
         D_list = []
 
         # D_Real
