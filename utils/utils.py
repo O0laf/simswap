@@ -4,13 +4,6 @@ import cv2
 import os
 
 
-def hinge_loss(X, positive=True):
-    if positive:
-        return torch.relu(1-X).mean()
-    else:
-        return torch.relu(X+1).mean()
-
-
 def get_grid_row(images):
     # Make row of 8 images
     images = images[:8]
