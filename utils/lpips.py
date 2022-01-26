@@ -86,3 +86,4 @@ def calculate_lpips_given_images(group_of_images):
             lpips_values.append(lpips(group_of_images[i], group_of_images[j]))
     lpips_value = torch.mean(torch.stack(lpips_values, dim=0))
     return lpips_value.item()
+    

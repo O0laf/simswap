@@ -16,9 +16,6 @@ class LossCollector():
     def get_L1_loss_with_same_person(self, a, b, same_person):
         return torch.sum(0.5 * torch.mean(torch.abs(a - b).reshape(self.args.batch_size, -1), dim=1) * same_person) / (same_person.sum() + 1e-6)
 
-    def get_L2_loss_with_same_person(self, a, b, same_person):
-        return torch.sum(0.5 * torch.mean(torch.pow(a - b, 2).reshape(self.args.batch_size, -1), dim=1) * same_person) / (same_person.sum() + 1e-6)
-
     def get_attr_loss(self, a, b):
         L_attr = 0
         for i in range(len(a)):

@@ -27,7 +27,7 @@ def train(gpu, args):
 
     if args.use_mGPU:
         args.isMaster = gpu==0
-
+        
         utils.setup_ddp(gpu, args.gpu_num)
 
         # Data parallelism is required to use multi-GPU
@@ -74,7 +74,7 @@ def train(gpu, args):
         I_source, I_target, same_person = I_source.to(gpu), I_target.to(gpu), same_person.to(gpu)
 
         ###########
-        # train G #
+        # Train G #
         ###########
 
         G_list = [I_source, I_target, same_person]
@@ -106,7 +106,7 @@ def train(gpu, args):
         utils.update_net(opt_G, loss_G)
 
         ###########
-        # train D #
+        # Train D #
         ###########
 
         D_list = []
@@ -128,21 +128,22 @@ def train(gpu, args):
         utils.update_net(opt_D, loss_D)
 
         ################
-        # log and save #
+        # Log and save #
         ################
 
-        # Save and print loss
-        if args.isMaster and global_step % args.loss_cycle==0:
-            wandb.log(loss_collector.loss_dict)
-            loss_collector.print_loss(global_step)
+        if args.isMaster:
+            # Save and print loss
+            if global_step % args.loss_cycle == 0:
+                wandb.log(loss_collector.loss_dict)
+                loss_collector.print_loss(global_step)
 
-        # Save image
-        if args.isMaster and global_step % args.image_cycle == 0:
-            utils.save_image(args, global_step, "imgs", [I_source, I_target, I_swapped])
+            # Save image
+            if global_step % args.image_cycle == 0:
+                utils.save_image(args, global_step, "imgs", [I_source, I_target, I_swapped])
 
-        # Save checkpoint parameters 
-        if global_step % args.ckpt_cycle == 0:
-            ckptio.save_ckpt(args, global_step, G)
+            # Save checkpoint parameters 
+            if global_step % args.ckpt_cycle == 0:
+                ckptio.save_ckpt(args, global_step, G)
 
 
 if __name__ == "__main__":
