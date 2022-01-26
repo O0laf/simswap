@@ -3,6 +3,7 @@ from torch import nn
 import torch.nn.functional as F
 from nets import arcface
 
+
 class InstanceNorm(nn.Module):
     def __init__(self, epsilon=1e-8):
         """
@@ -75,6 +76,7 @@ class ResnetBlock_Adain(nn.Module):
         out = x + y
         return out
 
+
 class Generator_Adain_Upsample(nn.Module):
     def __init__(self, input_nc, output_nc, style_dim=512, n_blocks=6, norm_layer=nn.BatchNorm2d, padding_type='reflect'):
         assert (n_blocks >= 0)
@@ -145,6 +147,7 @@ class Generator_Adain_Upsample(nn.Module):
         # x = (x + 1) / 2
         return x
 
+
 class Discriminator(nn.Module):
     def __init__(self, input_nc, norm_layer=nn.BatchNorm2d, use_sigmoid=False):
         super(Discriminator, self).__init__()
@@ -197,3 +200,4 @@ class Discriminator(nn.Module):
         out.append(x)
         
         return out
+        

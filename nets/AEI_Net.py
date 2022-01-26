@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from nets import arcface
 
+
 def weight_init(m):
     if isinstance(m, nn.Linear):
         m.weight.data.normal_(0, 0.001)
@@ -13,12 +14,14 @@ def weight_init(m):
     if isinstance(m, nn.ConvTranspose2d):
         nn.init.xavier_normal_(m.weight.data)
 
+
 def conv4x4(in_c, out_c, norm=nn.BatchNorm2d):
     return nn.Sequential(
         nn.Conv2d(in_channels=in_c, out_channels=out_c, kernel_size=4, stride=2, padding=1, bias=False),
         norm(out_c),
         nn.LeakyReLU(0.1, inplace=True)
     )
+
 
 class deconv4x4(nn.Module):
     def __init__(self, in_c, out_c, norm=nn.BatchNorm2d):
@@ -32,6 +35,7 @@ class deconv4x4(nn.Module):
         x = self.bn(x)
         x = self.lrelu(x)
         return torch.cat((x, skip), dim=1)
+
 
 class AADLayer(nn.Module):
     def __init__(self, c_x, attr_c, c_id=256):
@@ -68,6 +72,7 @@ class AADLayer(nn.Module):
         out = (torch.ones_like(M).to(M.device) - M) * A + M * I
         return out
 
+
 class AAD_ResBlk(nn.Module):
     def __init__(self, cin, cout, c_attr, c_id=256):
         super(AAD_ResBlk, self).__init__()
@@ -103,6 +108,7 @@ class AAD_ResBlk(nn.Module):
         x = x + h
         
         return x
+
 
 class MLAttrEncoder(nn.Module):
     def __init__(self):
@@ -148,6 +154,7 @@ class MLAttrEncoder(nn.Module):
         z_attr7 = self.deconv6(z_attr6, feat1)
         z_attr8 = F.interpolate(z_attr7, scale_factor=2, mode='bilinear', align_corners=True)
         return z_attr1, z_attr2, z_attr3, z_attr4, z_attr5, z_attr6, z_attr7, z_attr8
+
 
 class AADGenerator(nn.Module):
     def __init__(self, c_id=256):
@@ -200,7 +207,3 @@ class AEI_Net(nn.Module):
 
     def get_id(self, I):
         return self.arcface(F.interpolate(I[:, :, 19:237, 19:237], [112, 112], mode='bilinear', align_corners=True))
-
-
-
-

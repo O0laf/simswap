@@ -8,6 +8,7 @@ def l2_norm(input,axis=1):
     output = torch.div(input, norm)
     return output
 
+
 class SEModule(nn.Module):
     def __init__(self, channels, reduction):
         super(SEModule, self).__init__()
@@ -27,6 +28,7 @@ class SEModule(nn.Module):
         x = self.fc2(x)
         x = self.sigmoid(x)
         return module_input * x
+
 
 class bottleneck_IR_SE(nn.Module):
     def __init__(self, in_channel, depth, stride):
@@ -50,11 +52,14 @@ class bottleneck_IR_SE(nn.Module):
         res = self.res_layer(x)
         return res + shortcut
 
+
 class Bottleneck(namedtuple('Block', ['in_channel', 'depth', 'stride'])):
     '''A named tuple describing a ResNet block.'''
     
+
 def get_block(in_channel, depth, num_units, stride = 2):
   return [Bottleneck(in_channel, depth, stride)] + [Bottleneck(depth, depth, 1) for i in range(num_units-1)]
+
 
 def get_blocks(num_layers):
     if num_layers == 50:
@@ -79,6 +84,7 @@ def get_blocks(num_layers):
             get_block(in_channel=256, depth=512, num_units=3)
         ]
     return blocks
+
 
 class Backbone(nn.Module):
     def __init__(self, num_layers, drop_ratio, mode='ir'):
@@ -110,3 +116,4 @@ class Backbone(nn.Module):
         x = self.body(x)
         x = self.output_layer(x)
         return l2_norm(x)
+        
