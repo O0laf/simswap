@@ -1,6 +1,6 @@
 import torch
-from utils import utils
 import time
+
 
 class lossCollector():
     def __init__(self, args):
@@ -9,19 +9,9 @@ class lossCollector():
         self.start_time = time.time()
         self.loss_dict = {}
         self.L1 = torch.nn.L1Loss()
-        self.L2 = torch.nn.MSELoss()
 
     def get_id_loss(self, a, b):
         return (1 - torch.cosine_similarity(a, b, dim=1)).mean()
-
-    def get_lpips_loss(self, a, b):
-        return self.lpips(a, b)
-        
-    def get_L1_loss(self, a, b):
-        return self.L1(a, b)
-
-    def get_L2_loss(self, a, b):
-        return self.L2(a, b)
 
     def get_L1_loss_with_same_person(self, a, b, same_person):
         return torch.sum(0.5 * torch.mean(torch.abs(a - b).reshape(self.args.batch_size, -1), dim=1) * same_person) / (same_person.sum() + 1e-6)
@@ -52,7 +42,6 @@ class lossCollector():
         return loss
         
     def get_loss_G(self, I_source, I_target, same_person, I_swapped, g_fake1, g_fake2, g_real1, g_real2, id_swapped, id_source):
-        
         L_G = 0.0
         
         # adv loss
@@ -89,8 +78,8 @@ class lossCollector():
             feat_weights = 4.0 / (n_layers_D + 1)
             D_weights = 1.0 / num_D
             for i in range(0, n_layers_D):
-                L_fm += D_weights * feat_weights * self.get_L1_loss(g_fake1[i], g_real1[i].detach())
-                L_fm += D_weights * feat_weights * self.get_L1_loss(g_fake2[i], g_real2[i].detach())
+                L_fm += D_weights * feat_weights * self.L1(g_fake1[i], g_real1[i].detach())
+                L_fm += D_weights * feat_weights * self.L1(g_fake2[i], g_real2[i].detach())
             L_G += self.args.W_fm * L_fm
             self.loss_dict["L_fm"] = round(L_recon.item(), 4)
 
@@ -100,7 +89,6 @@ class lossCollector():
         return L_G
 
     def get_loss_D(self, d_real1, d_real2, d_fake1, d_fake2):
-        
         # real 
         L_D_real = 0
         L_D_real += self.get_hinge_loss(d_real1, True, for_discriminator=True)
@@ -110,7 +98,6 @@ class lossCollector():
         L_D_fake = 0
         L_D_fake += self.get_hinge_loss(d_fake1, False, for_discriminator=True)
         L_D_fake += self.get_hinge_loss(d_fake2, False, for_discriminator=True)
-
 
         L_D = 0.5*(L_D_real.mean() + L_D_fake.mean())
         
@@ -122,7 +109,6 @@ class lossCollector():
         return L_D
     
     def print_loss(self, global_step):
-
         seconds = int(time.time() - self.start_time)
         print("")
         print(f"[ {seconds//3600//24:02}d {(seconds//3600)%24:02}h {(seconds//60)%60:02}m {seconds%60:02}s ]")

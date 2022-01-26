@@ -3,7 +3,6 @@ import torchvision.transforms as transforms
 from PIL import Image
 import glob
 import random
-import cv2
 
 
 class FaceDataset(Dataset):
@@ -43,4 +42,3 @@ class FaceDataset(Dataset):
 
     def __len__(self):
         return sum(self.N)
-
